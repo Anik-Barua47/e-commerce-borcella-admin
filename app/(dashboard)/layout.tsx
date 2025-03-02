@@ -7,7 +7,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex">
+    <div className="flex w-screen">
       <LeftSideBar />
       <div className="flex-1">
         <SidebarTrigger className="border" />

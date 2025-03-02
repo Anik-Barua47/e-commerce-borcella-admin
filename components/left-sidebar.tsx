@@ -65,7 +65,7 @@ export function LeftSideBar() {
                     asChild
                     className={`${
                       pathname === item.url
-                        ? "text-blue-500 border-e-3 rounded-e-none border-gray-500"
+                        ? "text-blue-500 border-e-3 rounded-e-none border-gray-400"
                         : ""
                     }`}
                   >
