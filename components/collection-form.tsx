@@ -34,30 +34,39 @@ const formSchema = z.object({
   image: z.string(),
 });
 
-const CollectionsForm = () => {
+interface CollectionFormProps {
+  initialData?: CollectionType | null;
+}
+
+const CollectionsForm = ({ initialData }: CollectionFormProps) => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   // Form
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      title: "",
-      description: "",
-      image: "",
-    },
+    defaultValues: initialData
+      ? initialData
+      : {
+          title: "",
+          description: "",
+          image: "",
+        },
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setLoading(true);
-      const res = await fetch("/api/collections", {
+      const url = initialData
+        ? `/api/collections/${initialData.id}`
+        : "/api/collections";
+      const res = await fetch(url, {
         method: "POST",
         body: JSON.stringify(values),
       });
 
       if (res.ok) {
         setLoading(false);
-        toast.success("Collection created");
+        toast.success(`Collection ${initialData ? "updated" : "created"}`);
         router.push("/collections");
       }
     } catch (error) {

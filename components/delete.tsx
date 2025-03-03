@@ -16,57 +16,52 @@ import {
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
+import { deleteCollection } from "@/actions/delete-collection"; // ✅ Import Server Action
 
 interface DeleteProps {
   id: string;
 }
 
 const Delete = ({ id }: DeleteProps) => {
-  const [loading, startTransition] = useTransition();
+  const [pending, startTransition] = useTransition();
   const router = useRouter();
+
   const onDelete = async () => {
     startTransition(async () => {
-      try {
-        const res = await fetch(`/api/collections/${id}`, {
-          method: "DELETE",
-        });
+      const result = await deleteCollection(id); // ✅ Call the Server Action
 
-        if (res.ok) {
-          toast.success("Deleted Successfully!!");
-          router.push("/collections"); // ✅ Redirect to /collections
-          router.refresh();
-        }
-      } catch (error) {
-        console.log("[ERROR at collection DELETE]:", error);
-        toast.error("Something went wrong! Its not Deleting!!!!");
+      if (result.success) {
+        toast.success("Deleted Successfully!!");
+        window.location.reload(); // ✅ Refresh the page instead of full reload
+      } else {
+        toast.error(result.message || "Something went wrong!");
       }
     });
   };
+
   return (
-    <>
-      <AlertDialog>
-        <AlertDialogTrigger asChild>
-          <Button variant="destructive" className="text-white">
-            <Trash className="h-4 w-4" />
-          </Button>
-        </AlertDialogTrigger>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete your
-              collection.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={loading}>Cancel</AlertDialogCancel>
-            <AlertDialogAction disabled={loading} onClick={onDelete}>
-              Continue
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </>
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button variant="destructive" className="text-white" disabled={pending}>
+          <Trash className="h-4 w-4" />
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This action cannot be undone. This will permanently delete your
+            collection.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={pending}>Cancel</AlertDialogCancel>
+          <AlertDialogAction disabled={pending} onClick={onDelete}>
+            {pending ? "Deleting..." : "Continue"}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 };
 
