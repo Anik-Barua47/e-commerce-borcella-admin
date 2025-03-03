@@ -7,66 +7,55 @@ import { useEffect, useRef } from "react";
 
 interface ImageUploadProps {
   value: string[];
-  onChange: (value: string[]) => void;
-  isMultiple?: boolean; // New prop to control if multiple images are allowed
+  onChange: (value: string) => void;
+  onRemove: (value: string) => void;
 }
 
-const ImageUpload = ({
-  value,
+const ImageUpload: React.FC<ImageUploadProps> = ({
   onChange,
-  isMultiple = true,
-}: ImageUploadProps) => {
-  const imagesRef = useRef<string[]>(value || []);
-
-  // Handle image upload based on whether multiple images are allowed
-  const onUpload = (url: string) => {
-    if (isMultiple) {
-      imagesRef.current = [...imagesRef.current, url]; // Append image
-    } else {
-      imagesRef.current = [url]; // Replace with the new image
-    }
-    onChange(imagesRef.current); // Update form without re-render
-  };
-
-  // Handle image removal
-  const onRemove = (url: string) => {
-    const updatedImages = value.filter((image) => image !== url);
-    imagesRef.current = updatedImages;
-    onChange(updatedImages); // Ensure form gets the updated array
+  onRemove,
+  value,
+}) => {
+  const onUpload = (result: any) => {
+    onChange(result.info.secure_url);
   };
 
   return (
     <>
       <div className="mb-4 flex flex-wrap items-center gap-4">
-        {imagesRef.current.map((url) => (
-          <div key={url} className="relative h-[200px] w-[200px]">
+        {value.map((url) => (
+          <div className="relative w-[200px] h-[200px]" key={url}>
+            <div className="absolute top-0 right-0 z-10">
+              <Button
+                onClick={(e) => {
+                  onRemove(url);
+                }}
+                size="sm"
+                className="bg-red-500 text-white"
+              >
+                <Trash className="h-4 w-4" />
+              </Button>
+            </div>
             <Image
               src={url}
-              fill
-              alt="uploaded-image"
+              alt="collection"
               className="object-cover rounded-lg"
+              fill
             />
-            <Button
-              className="absolute top-1 right-1 rounded-full"
-              variant="destructive"
-              size="sm"
-              onClick={() => onRemove(url)}
-            >
-              <Trash className="h-5 w-5" />
-            </Button>
           </div>
         ))}
       </div>
 
-      <CldUploadWidget
-        uploadPreset="e-commerce-admin"
-        onSuccess={(result: any) => onUpload(result?.info?.secure_url)}
-      >
+      <CldUploadWidget uploadPreset="e-commerce-admin" onSuccess={onUpload}>
         {({ open }) => (
           <Button
-            onClick={() => open()}
-            className="bg-gray-1 text-white flex items-center gap-x-2"
             type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              open();
+            }}
+            className="text-white flex items-center gap-x-2"
+            // type="button"
           >
             <Plus className="size-4" />
             Upload Image

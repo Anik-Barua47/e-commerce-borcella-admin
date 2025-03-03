@@ -18,13 +18,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "./ui/textarea";
 import ImageUpload from "./image-upload";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 const formSchema = z.object({
   title: z
-    .string({
-      required_error: "Name is required",
-      invalid_type_error: "Name must be a string",
-    })
+    .string()
     .min(2, { message: "Must be 2 or more characters long" })
     .max(20, { message: "Must be 20 or fewer characters long" })
     .regex(/^[A-Za-z\s]+$/, {
@@ -35,6 +35,8 @@ const formSchema = z.object({
 });
 
 const CollectionsForm = () => {
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
   // Form
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -46,7 +48,22 @@ const CollectionsForm = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+    try {
+      setLoading(true);
+      const res = await fetch("/api/collections", {
+        method: "POST",
+        body: JSON.stringify(values),
+      });
+
+      if (res.ok) {
+        setLoading(false);
+        toast.success("Collection created");
+        router.push("/collections");
+      }
+    } catch (error) {
+      console.log("[Collection_POST]", error);
+      toast.error("Collection not created!! something went wrong");
+    }
   };
 
   return (
@@ -98,8 +115,9 @@ const CollectionsForm = () => {
                   <FormControl>
                     <ImageUpload
                       value={field.value ? [field.value] : []}
-                      onChange={(url) => field.onChange(url[0])}
-                      isMultiple={false}
+                      onChange={(url) => field.onChange(url)}
+                      onRemove={() => field.onChange("")}
+                      // isMultiple={false}
                     />
                   </FormControl>
 
@@ -107,7 +125,18 @@ const CollectionsForm = () => {
                 </FormItem>
               )}
             />
-            <Button type="submit">Submit</Button>
+            <div className="flex gap-10">
+              <Button type="submit" className="bg-blue-500 text-white">
+                Submit
+              </Button>
+              <Button
+                type="button"
+                onClick={() => router.push("/collections")}
+                className="bg-blue-500 text-white"
+              >
+                Discard
+              </Button>
+            </div>
           </form>
         </Form>
       </div>

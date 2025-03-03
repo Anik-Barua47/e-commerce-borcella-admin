@@ -2,6 +2,7 @@ import { type Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "react-hot-toast";
 
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 
@@ -32,7 +33,10 @@ export default function RootLayout({
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
           <SidebarProvider>
-            <main>{children}</main>
+            <main>
+              {children}
+              <Toaster />
+            </main>
           </SidebarProvider>
         </body>
       </html>

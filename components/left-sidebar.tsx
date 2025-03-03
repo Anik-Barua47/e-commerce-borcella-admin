@@ -49,7 +49,6 @@ import { usePathname } from "next/navigation";
 
 export function LeftSideBar() {
   const pathname = usePathname();
-  console.log(pathname);
   return (
     <Sidebar>
       <SidebarHeader className="mt-3 ms-5">
