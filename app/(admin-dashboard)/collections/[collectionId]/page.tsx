@@ -4,7 +4,7 @@ import { Separator } from "@/components/ui/separator";
 
 import { redirect } from "next/navigation";
 import { getSingleCollection } from "@/actions/get-single-collection";
-import CollectionsForm from "@/components/collection-form";
+import CollectionsForm from "@/components/collection-columns";
 const EditCollectionPage = async ({
   params,
 }: {

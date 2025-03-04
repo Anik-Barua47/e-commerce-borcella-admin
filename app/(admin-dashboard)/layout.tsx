@@ -1,3 +1,4 @@
+"use client"
 import { LeftSideBar } from "@/components/left-sidebar";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 

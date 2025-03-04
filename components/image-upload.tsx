@@ -55,7 +55,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
               open();
             }}
             className="text-white flex items-center gap-x-2"
-            // type="button"
+          // type="button"
           >
             <Plus className="size-4" />
             Upload Image

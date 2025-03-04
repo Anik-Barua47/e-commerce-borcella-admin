@@ -32,6 +32,7 @@ const Delete = ({ id }: DeleteProps) => {
 
       if (result.success) {
         toast.success("Deleted Successfully!!");
+        router.push("/collections");
         window.location.reload(); // ✅ Refresh the page instead of full reload
       } else {
         toast.error(result.message || "Something went wrong!");

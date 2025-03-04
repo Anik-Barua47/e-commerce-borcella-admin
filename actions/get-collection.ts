@@ -8,7 +8,7 @@ export const getCollections = async () => {
   const { userId } = await auth();
 
   if (!userId) {
-    return;
+    return []; // ✅ Always return an empty array instead of undefined
   }
 
   const collections = await prisma.collection.findMany({
@@ -16,6 +16,6 @@ export const getCollections = async () => {
       products: true,
     },
   });
-  console.log(collections);
-  return collections;
+
+  return collections || []; // ✅ Ensure collections is always an array
 };

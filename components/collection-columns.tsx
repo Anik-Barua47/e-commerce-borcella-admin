@@ -10,10 +10,10 @@ export const CollectionColumn: ColumnDef<CollectionType>[] = [
     header: "Title",
     cell: ({ row }) => (
       <Link
-        href={`/collections/${row.original.id}`}
+        href={`/collections/new?collectionId=${row.original.id}`} // ✅ Redirects to form page
         className="hover:text-gray-500"
       >
-        <p>{row.original.title}</p>
+        {row.original.title}
       </Link>
     ),
   },

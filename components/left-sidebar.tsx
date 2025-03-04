@@ -1,7 +1,7 @@
 "use client";
 
+import dynamic from "next/dynamic"; // ✅ Import dynamically
 import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
-
 import {
   Sidebar,
   SidebarContent,
@@ -15,37 +15,12 @@ import {
 } from "@/components/ui/sidebar";
 import Image from "next/image";
 import { navLinks } from "@/lib/constants";
-import { UserButton } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
 
-// Menu items.
-// const items = [
-//   {
-//     title: "Home",
-//     url: "#",
-//     icon: Home,
-//   },
-//   {
-//     title: "Inbox",
-//     url: "#",
-//     icon: Inbox,
-//   },
-//   {
-//     title: "Calendar",
-//     url: "#",
-//     icon: Calendar,
-//   },
-//   {
-//     title: "Search",
-//     url: "#",
-//     icon: Search,
-//   },
-//   {
-//     title: "Settings",
-//     url: "#",
-//     icon: Settings,
-//   },
-// ];
+// ✅ Dynamically Import `UserButton` (Fixes the Server Component Issue)
+const UserButton = dynamic(() => import("@clerk/nextjs").then((mod) => mod.UserButton), {
+  ssr: false, // ✅ Prevents running on the server
+});
 
 export function LeftSideBar() {
   const pathname = usePathname();
@@ -62,11 +37,10 @@ export function LeftSideBar() {
                 <SidebarMenuItem key={index} className="my-2 ms-5">
                   <SidebarMenuButton
                     asChild
-                    className={`${
-                      pathname === item.url
+                    className={`${pathname === item.url
                         ? "text-blue-500 border-e-3 rounded-e-none border-gray-400"
                         : ""
-                    }`}
+                      }`}
                   >
                     <a href={item.url}>
                       <item.icon />
@@ -77,7 +51,7 @@ export function LeftSideBar() {
               ))}
               <div className="flex items-center gap-3 my-2 ms-5">
                 <div className="border rounded-[100%] p-1 border-gray-400 flex justify-center items-center">
-                  <UserButton />
+                  <UserButton /> {/* ✅ Now safely imported */}
                 </div>
                 <p>Edit Profile</p>
               </div>
