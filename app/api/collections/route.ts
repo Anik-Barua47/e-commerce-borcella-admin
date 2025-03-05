@@ -1,43 +1,56 @@
-import prisma from "@/lib/prisma";
-import { auth } from "@clerk/nextjs/server";
-import { NextResponse } from "next/server";
+import { connectToDB } from "@/lib/mongoDB";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(req: Request) {
+import Collection from "@/lib/models/Collection";
+import { auth } from "@clerk/nextjs/server";
+
+export const POST = async (req: NextRequest) => {
   try {
     const { userId } = await auth();
-    const collection = await req.json();
-    // console.log(collection);
+    console.log(userId);
 
     if (!userId) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+      return new NextResponse("Unauthorized", { status: 403 });
     }
 
-    const existCollection = await prisma.collection.findUnique({
-      where: { title: collection.title },
-    });
+    await connectToDB();
 
-    if (existCollection) {
-      return NextResponse.json(
-        { message: "Collection already exists" },
-        { status: 400 }
-      );
+    const { title, description, image } = await req.json();
+
+    const existingCollection = await Collection.findOne({ title });
+
+    if (existingCollection) {
+      return new NextResponse("Collection already exists", { status: 400 });
     }
 
-    const newCollection = await prisma.collection.create({
-      data: {
-        ...collection,
-      },
+    if (!title || !image) {
+      return new NextResponse("Title and image are required", { status: 400 });
+    }
+
+    const newCollection = await Collection.create({
+      title,
+      description,
+      image,
     });
 
-    return NextResponse.json({
-      message: "Collection Created Successfully",
-      data: newCollection,
-    });
-  } catch (error) {
-    console.log("[ERROR_AT_COLLECTION]:", error);
-    return NextResponse.json(
-      { message: "Internal Server Error" },
-      { status: 500 }
-    );
+    await newCollection.save();
+
+    return NextResponse.json(newCollection, { status: 200 });
+  } catch (err) {
+    console.log("[collections_POST]", err);
+    return new NextResponse("Internal Server Error", { status: 500 });
   }
-}
+};
+
+export const GET = async (req: NextRequest) => {
+  try {
+    await connectToDB();
+
+    const collections = await Collection.find().sort({ createdAt: "desc" });
+
+    return NextResponse.json(collections, { status: 200 });
+  } catch (err) {
+    console.log("[collections_GET]", err);
+    return new NextResponse("Internal Server Error", { status: 500 });
+  }
+};

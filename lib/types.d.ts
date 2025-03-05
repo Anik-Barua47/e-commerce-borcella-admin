@@ -1,5 +1,5 @@
 type CollectionType = {
-  id: string;
+  _id: string;
   title: string;
   description: string;
   image: string;
@@ -7,7 +7,7 @@ type CollectionType = {
 };
 
 type ProductType = {
-  id: string;
+  _id: string;
   title: string;
   description: string;
   media: [string];
@@ -20,4 +20,25 @@ type ProductType = {
   expense: number;
   createdAt: Date;
   updatedAt: Date;
+};
+
+type OrderColumnType = {
+  _id: string;
+  customer: string;
+  products: number;
+  totalAmount: number;
+  createdAt: string;
+};
+
+type OrderItemType = {
+  product: ProductType;
+  color: string;
+  size: string;
+  quantity: number;
+};
+
+type CustomerType = {
+  clerkId: string;
+  name: string;
+  email: string;
 };
