@@ -72,8 +72,11 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ initialData }) => {
       if (res.ok) {
         setLoading(false);
         toast.success(`Collection ${initialData ? "updated" : "created"} `);
-        router.push("/collections");
-        window.location.href = "/collections";
+
+        setTimeout(() => {
+          router.push("/collections");
+          window.location.href = "/collections";
+        }, 2000); // Delay for 2 seconds (2000ms) to allow toast visibility
       }
     } catch (error) {
       console.log("[collections_POST]", error);
