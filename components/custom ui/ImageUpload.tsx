@@ -3,17 +3,30 @@ import { Plus, Trash } from "lucide-react";
 import { Button } from "../ui/button";
 import Image from "next/image";
 import { useRef } from "react";
+import toast from "react-hot-toast";
 
 interface ImageUploadProps {
   onChange: (value: string[]) => void;
   onRemove: (value: string) => void;
+  value: string[]; // Current images
+  maxImages?: number; // Maximum number of images allowed
 }
 
-const ImageUpload: React.FC<ImageUploadProps> = ({ onChange, onRemove }) => {
-  const imagesRef = useRef<string[]>([]); // Use useRef to store images
+const ImageUpload: React.FC<ImageUploadProps> = ({
+  onChange,
+  onRemove,
+  value,
+  maxImages,
+}) => {
+  const imagesRef = useRef<string[]>(value || []); // Use useRef to store images
 
   // Update onChange when new images are uploaded
   const onUpload = (result: any) => {
+    if (maxImages && imagesRef.current.length >= maxImages) {
+      toast.error(`You can only upload up to ${maxImages} image(s).`);
+      return;
+    }
+
     imagesRef.current.push(result.info.secure_url);
     onChange(imagesRef.current); // Send the updated list to the parent
   };

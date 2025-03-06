@@ -24,6 +24,7 @@ import toast from "react-hot-toast";
 import Delete from "../custom ui/Delete";
 import MultiText from "../custom ui/MultiText";
 import MultiSelect from "../custom ui/MultiSelect";
+import Loader from "../custom ui/Loader";
 
 const formSchema = z.object({
   title: z.string().min(2).max(20),
@@ -45,7 +46,7 @@ interface ProductFormProps {
 const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
   const router = useRouter();
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [collections, setCollections] = useState<CollectionType[]>([]);
 
   const getCollections = async () => {
@@ -124,12 +125,14 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
     }
   };
 
-  return (
+  return loading ? (
+    <Loader />
+  ) : (
     <div className="p-10">
       {initialData ? (
         <div className="flex items-center justify-between">
           <p className="text-heading2-bold">Edit Product</p>
-          <Delete id={initialData._id} />
+          <Delete item="product" id={initialData._id} />
         </div>
       ) : (
         <p className="text-heading2-bold">Create Product</p>
@@ -181,15 +184,17 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
                 <FormLabel>Images</FormLabel>
                 <FormControl>
                   <ImageUpload
-                    onChange={(urls) => form.setValue("media", urls)}
+                    value={field.value}
+                    onChange={(urls) => field.onChange(urls)}
                     onRemove={(url) => {
-                      const updatedMedia = form
-                        .getValues("media")
-                        .filter((image) => image !== url);
-                      form.setValue("media", updatedMedia);
+                      const updatedMedia = field.value.filter(
+                        (image) => image !== url
+                      );
+                      field.onChange(updatedMedia);
                     }}
                   />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -363,7 +368,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
               Submit
             </Button>
             <Button
-              onClick={() => router.push("/collections")}
+              onClick={() => router.push("/products")}
               type="button"
               className="bg-blue-1 text-white hover:bg-black"
             >
