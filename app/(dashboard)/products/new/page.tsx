@@ -7,5 +7,5 @@ const CreateProduct = () => {
     </div>
   );
 };
-
+export const dynamic = "force-dynamic";
 export default CreateProduct;

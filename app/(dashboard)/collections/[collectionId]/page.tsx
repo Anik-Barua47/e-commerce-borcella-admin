@@ -37,5 +37,6 @@ const CollectionDetails = ({
     <CollectionForm initialData={collectionDetails} />
   );
 };
+export const dynamic = "force-dynamic";
 
 export default CollectionDetails;
