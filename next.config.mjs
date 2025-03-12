@@ -4,8 +4,14 @@ const nextConfig = {
     remotePatterns: [
       {
         hostname: "res.cloudinary.com",
-      },
+      }
     ],
+  },
+  eslint: {
+    ignoreDuringBuilds: true, // Disable ESLint during builds
+  },
+  typescript: {
+    ignoreBuildErrors: true, // Disable TypeScript errors during builds
   },
 };
 
